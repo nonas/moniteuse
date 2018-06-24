@@ -1,11 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from numpy import loadtxt
 import datetime
 
+######################
 # Load data from files
+######################
 DATA_SDA = loadtxt('sda.dat', delimiter=' ', skiprows=1)
 
 SDA_DATE = DATA_SDA[:,0]
@@ -52,7 +54,13 @@ SDB_USED_WDCG = DATA_SDB[:,18]
 
 xdates_sdb = [datetime.datetime.strptime(str(int(date)),'%Y%m%d') for date in SDB_DATE]
 
-# clear plot
+years = mdates.YearLocator() # every year
+months = mdates.MonthLocator() # every month
+yearsFmt = mdates.DateFormatter('%Y')
+
+###################
+# plot1 : disk size
+###################
 plt.clf()
 
 fig = plt.figure(figsize=(7,6))
@@ -62,42 +70,61 @@ fig = plt.figure(figsize=(7,6))
 #########
 ax1 = plt.subplot(211)
 
-# Set x limits
-#plt.xlim(0,5)
-# xlabel
-ax1.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+# format the ticks
+ax1.xaxis.set_major_locator(years)
+ax1.xaxis.set_major_formatter(yearsFmt)
+ax1.xaxis.set_minor_locator(months)
 
 plt.title("size [GiB]")
 
 # Set y limits
 plt.ylim(0,40)
-# ylabel
-#plt.ylabel("size [GiB]")
 
+labels = ["root", "home"]
 # plot
-plt.stackplot( xdates_sda, SDA_USED_ROOT/(1024*1024), SDA_USED_HOME/(1024*1024))
-p1 = plt.Rectangle((0, 0), 1, 1, fc="b")
-p2 = plt.Rectangle((0, 0), 1, 1, fc="g")
-plt.legend([p1, p2], ["root", "home"],loc = 2)
+plt.stackplot( xdates_sda, SDA_USED_ROOT/(1024*1024), SDA_USED_HOME/(1024*1024), labels=labels)
+plt.legend(loc = 2)
 
 #########
 # sub 2
 #########
 ax2 = plt.subplot(212)
 
-# Set x limits
-#plt.xlim(0,5)
-# xlabel
-ax2.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+# format the ticks
+ax2.xaxis.set_major_locator(years)
+ax2.xaxis.set_major_formatter(yearsFmt)
+ax2.xaxis.set_minor_locator(months)
 
 # Set y limits
-plt.ylim(0,1000)
-# ylabel
-#plt.ylabel("size [GiB]")
+plt.ylim(0,1024)
 
 # plot
 plt.stackplot( xdates_sdb, SDB_USED_WDCG/(1024*1024))
-p1 = plt.Rectangle((0, 0), 1, 1, fc="b")
-plt.legend([p1], ["data"],loc = 3)
+plt.legend(["data"], loc = 2)
 
 plt.savefig('disks_size.png', bbox_inches='tight')
+
+##########################
+# plot2 : ssd HW32 per day
+##########################
+plt.clf()
+
+fig = plt.figure(figsize=(7,3))
+
+#########
+# sub 1
+#########
+ax1 = plt.subplot(111)
+
+years = mdates.YearLocator() # every year
+months = mdates.MonthLocator() # every month
+yearsFmt = mdates.DateFormatter('%Y')
+
+plt.title("ssd HostWrite [GiB]")
+
+# plot
+plt.plot( xdates_sda, (SDA_HW32[:])*32/1024)
+#plt.legend(loc = 2)
+fig.autofmt_xdate()
+
+plt.savefig('disks_ssd_hw32.png', bbox_inches='tight')

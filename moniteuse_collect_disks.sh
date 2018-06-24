@@ -20,7 +20,7 @@ ARS_A=$(echo "$SMART_SDA" | awk -F" " '/Available_Reservd_Space/ {print $NF}')
 MWI_A=$(echo "$SMART_SDA" | awk -F" " '/Media_Wearout_Indicator/ {print $NF}')
 EEE_A=$(echo "$SMART_SDA" | awk -F" " '/End-to-End_Error/ {print $NF}')
 
-S_USED_ROOT=$(echo "$DF" | awk -F" " '/\/dev\/sda2/ {print $3}')
+S_USED_ROOT=$(echo "$DF" | awk -F" " '/\/dev\/sda1/ {print $3}')
 S_USED_HOME=$(echo "$DF" | awk -F" " '/\/dev\/sda3/ {print $3}')
 
 echo $DATE $SUT_A $SSC_A $RSC_A $POH_A $PCC_A $USC_A $HW32_A $WMWI_A $WHRP_A $WM_A $ARS_A $MWI_A $EEE_A $S_USED_ROOT $S_USED_HOME >> sda.dat
